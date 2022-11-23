@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
+import 'package:finanzas_personal_2/models/categoria-modal.dart';
+import 'package:finanzas_personal_2/utilidades/iconsList.dart';
 import 'package:finanzas_personal_2/widgets/widget_utilidades/messenger_widget.dart';
 import 'package:finanzas_personal_2/services/categoria_service.dart';
 import 'package:finanzas_personal_2/provider/ingreso_egreso_provider.dart';
@@ -32,6 +34,7 @@ class DisenoCalculadoraWidget extends StatelessWidget {
       double widtButtom = MediaQuery.of(context).size.width/4-2;
       final calculadoraService = Provider.of<CalculadoraService>(context);
       final categoriaService = Provider.of<CategoriaService>(context);
+      final List<CategoriaModal> categoriaList = categoriaService.listaCategoria;
     return Column(children: [
               Row(children: [
                 GestureDetector(
@@ -200,7 +203,7 @@ class DisenoCalculadoraWidget extends StatelessWidget {
                         
 
 
-                  openModal(context, widtButtom, categoriaService);
+                  openModal(context, widtButtom, categoriaList);
                  },
                  child: BotonIconosWidget(
                           colorTexto: colorTexto, 
@@ -214,7 +217,7 @@ class DisenoCalculadoraWidget extends StatelessWidget {
 
   }
 
-  Future<dynamic> openModal(BuildContext context, double widtButtom, CategoriaService categoriaService) {
+  Future<dynamic> openModal(BuildContext context, double widtButtom, List<CategoriaModal> categoriaList) {
     return showModalBottomSheet(
                   context: context, 
                   builder: (_)=>  GridView.builder(
@@ -222,10 +225,10 @@ class DisenoCalculadoraWidget extends StatelessWidget {
                                   maxCrossAxisExtent: 200,
                                   childAspectRatio: 3 / 2,
                                   crossAxisSpacing: 20,
-                                  mainAxisSpacing: 20),
-                              itemCount: categoriaService.listaCategoria.length+1,                              
+                                  mainAxisSpacing: 10),
+                              itemCount: categoriaList.length+1,                              
                               itemBuilder: (BuildContext context, index) {
-                                if (categoriaService.listaCategoria.length == index) {
+                                if (categoriaList.length == index) {
                                   return GestureDetector(
                                     onTap: (){
                                        Navigator.popAndPushNamed(context, "categoria");
@@ -241,8 +244,9 @@ class DisenoCalculadoraWidget extends StatelessWidget {
                                 }
                                 return GestureDetector(
                                   onTap: (){
+                                    ingresoEgreso.categoria = categoriaList[index].id;
                                     egresoIngresoService.crearOActualizarIngresoEgreso(ingresoEgreso, Preferences.token);
-                                    Navigator.popAndPushNamed(context, "home");
+                                    Navigator.pushNamed(context, "home");
                                     messengerWidget(context, "Se creo un ${ingresoEgreso.tipo}");
                                   },
                                   child: Container(
@@ -250,7 +254,13 @@ class DisenoCalculadoraWidget extends StatelessWidget {
                                     decoration: BoxDecoration(
                                         color: Colors.amber,
                                         borderRadius: BorderRadius.circular(15)),
-                                    child:const  Text("222"),
+                                    child:  Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(listaIconos[categoriaList[index].icon]?[0]),
+                                        Text(categoriaList[index].nombre),
+                                        ],
+                                    ),
                                     // child: Text(categoriaService.listaCategoria[index].nombre),
                                   ),
                                 );

@@ -16,8 +16,8 @@ class IngresosEgresosWidget extends StatelessWidget {
                     widthFactor: 0.18,
                     heightFactor: 0.1,
                       child: ListTile(
-                        title: Text(ingreso),
-                        subtitle: Text(egreso))),
+                        title: Text(ingreso,style: const TextStyle(color: Colors.green)),
+                        subtitle: Text(egreso, style: const TextStyle(color: Colors.red)))),
                  );
   }
 }

@@ -82,7 +82,8 @@ class BottonModal extends StatelessWidget {
                                             Text(datos[indexx].nombre),
 
                                     ],),
-                                            Text("CLP ${datos[indexx].total.toString()}"),
+                                            Text("CLP ${datos[indexx].total.toString()}",
+                                                  style: TextStyle(color: (datos[indexx].tipo == "INGRESO")? Colors.green:Colors.red),),
                                   
                                       ],),
                         ),
@@ -98,6 +99,7 @@ class BottonModal extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
+                                    Icon(Icons.electric_moped_outlined, color: (datos[indexx].tipo == "INGRESO")? Colors.green:Colors.red,),
                                       Text("CLP ${datos[indexx].datos[index]["valor"].toString()}"),
                                       Text(datos[indexx].datos[index]["fecha"]),
                                   ],

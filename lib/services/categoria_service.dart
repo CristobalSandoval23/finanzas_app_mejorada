@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 
 class CategoriaService extends ChangeNotifier {
 
-    //  final String _baseUrl = "finanzaspersonales2022.herokuapp.com";
-     final String _baseUrl = "localhost:8088";
+     final String _baseUrl = "finanzaspersonales2022.herokuapp.com";
+    //  final String _baseUrl = "localhost:8088";
      final List<CategoriaModal> listaCategoria = [];
     bool isLoading = true;
      CategoriaService(){
@@ -30,6 +30,7 @@ class CategoriaService extends ChangeNotifier {
         listaCategoria.add(tempCategoria);
         
       });
+
 
 
       isLoading = false;

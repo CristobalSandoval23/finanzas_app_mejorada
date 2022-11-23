@@ -1,20 +1,17 @@
 import 'dart:convert';
+import 'package:finanzas_personal_2/models/categoria-modal.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:finanzas_personal_2/models/categoria_interna-modal.dart';
 import 'package:finanzas_personal_2/models/ingreso_egreso_bd_model.dart';
 
-import 'package:finanzas_personal_2/models/ingreso_egreso_model.dart';
-
 class EgresoIngresoService extends ChangeNotifier {
 
      final String _baseUrl = "finanzaspersonales2022.herokuapp.com";
     //  final String _baseUrl = "localhost:8088";
-     final List<EgresoIngresoModel> egresoIngresoList = [];
-     final List listaCategoria = [];
-     final List categoriaList = [];
-     final List<CategoriaInternaModel> listaCategoriaModificada = [];
-     final List pruebaLista = [];
+    final  List<CategoriaInternaModel> listaCategoriaModificada = [];
+    final  List<CategoriaInternaModel> listaIngreso = [];
+   final   List<CategoriaInternaModel> listaGasto = [];
       double totalIngreso = 0,
              totalGasto   = 0;
      late EgresoIngresoBDModel egresoIngresoSelect;
@@ -30,15 +27,15 @@ class EgresoIngresoService extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
       final List<String> tipoLista = ["INGRESO","GASTO"];
-      final url = Uri.http(_baseUrl,"/api/ingresos", {"limite":"40"});
+      final url = Uri.http(_baseUrl,"/api/ingresos", {"limite":"400"});
       final resp = await http.get(url);
       final Map<String, dynamic> data = json.decode(resp.body);
 
-      print(data["data"][0]);
+      print("Entre");
 
       for (var tipo in tipoLista) {
 
-             final categoriaDisponible = data["data"].where((ingresoEgreso) 
+             final categoriaDisponible = await data["data"].where((ingresoEgreso) 
                                       => ingresoEgreso["fecha"].contains("2022")
                                          && ingresoEgreso["tipo"] == tipo)
                                       .map((egresoIngreso) => egresoIngreso["categoria"]["_id"])
@@ -64,17 +61,29 @@ class EgresoIngresoService extends ChangeNotifier {
               totalGasto += total;                                   
               }
                 
-              final CategoriaInternaModel temp = CategoriaInternaModel(
+              final CategoriaInternaModel temp =  CategoriaInternaModel(
                 id: categoria, 
                 total: total,
                 nombre: listaEgresoIngresoCategoria[0]["categoria"]["nombre"], 
-                tipo: listaEgresoIngresoCategoria[0]["tipo"], 
+                tipo: tipo, 
                 datos: listaEgresoIngresoCategoria); 
 
-                listaCategoriaModificada.add(temp);
+                if (tipo == "INGRESO") {
+                  
+                listaIngreso.add(temp);
+                }else{
+                listaGasto.add(temp);
+
+                }
+
               });
 
       }
+              listaIngreso.sort((a,b)=> a.total.compareTo(b.total));
+              listaGasto.sort((a,b)=> a.total.compareTo(b.total));
+
+              listaCategoriaModificada.addAll(listaIngreso.reversed.toList(),);
+              listaCategoriaModificada.addAll(listaGasto.reversed.toList());
 
         isLoading = false;
         notifyListeners();
@@ -90,10 +99,8 @@ class EgresoIngresoService extends ChangeNotifier {
             } else {
               
             }
-
-                  isLoading = false;
-      notifyListeners();
-    
+            isLoading = false;
+            notifyListeners();
      }
 
      Future<String> crearIngresoEgreso(EgresoIngresoBDModel egresoIngreso, String token)async{
@@ -105,6 +112,12 @@ class EgresoIngresoService extends ChangeNotifier {
         },
         body: egresoIngreso.toJson() 
         );
+
+        listaCategoriaModificada.clear();
+        listaGasto.clear();
+        listaIngreso.clear();
+        cargar();
+
         return "";
      }
   

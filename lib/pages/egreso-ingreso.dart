@@ -163,7 +163,7 @@ class _EgresoIngresoBody extends StatelessWidget {
                 tipo: Preferences.pagTitle.toUpperCase(), 
                 uid: '', 
                 fecha: formatoFechaModificado(DateTime.now().toString()), 
-                categoria: "637678e473861ce55df7bdc5", 
+                categoria: "6376deedb82b1849e68a43eb", 
                 valor: (controllerEdit.text.contains(RegExp("[x + -- /]")))?0:int.parse(controllerEdit.text)))          
           ],),
       ),);

@@ -7,19 +7,17 @@ import 'package:intl/date_symbol_data_local.dart';
 import '../models/ingreso_egreso_bd_model.dart';
 import '../services/categoria_service.dart';
 import '../services/egreso_ingreso_service.dart';
-import 'package:finanzas_personal_2/models/categoria_interna-modal.dart';
 import 'package:finanzas_personal_2/models/categoria-modal.dart';
-import 'package:finanzas_personal_2/models/ingreso_egreso_model.dart';
 import 'package:finanzas_personal_2/services/login_service.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/CategoriasPersonalizados.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/barraMeses.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/botonModal.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/card_drawer.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/chart_donuts.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/ingresos-egresos_widget.dart';
-import 'package:finanzas_personal_2/widgets/wisget_home/card_end_drawer_widget.dart';
+import 'package:finanzas_personal_2/widgets/widget_home/barraMeses.dart';
+import 'package:finanzas_personal_2/widgets/widget_home/botonModal.dart';
+import 'package:finanzas_personal_2/widgets/widget_home/card_drawer.dart';
+import 'package:finanzas_personal_2/widgets/widget_home/ingresos-egresos_widget.dart';
+import 'package:finanzas_personal_2/widgets/widget_home/card_end_drawer_widget.dart';
 import 'package:finanzas_personal_2/theme/theme.dart';
 import 'package:finanzas_personal_2/share_preferences/preferencias.dart';
+
+import '../widgets/widget_home/chart_donuts copy.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -32,28 +30,12 @@ class HomePage extends StatelessWidget {
     final appTheme = Provider.of<ThemeChanger>(context);
     final colorPrimary = appTheme.currentTheme.colorScheme.onSecondary;
     const colorSecundary =Color.fromRGBO(121, 200, 145, 10);
-      final Map<double, List> data2 = {
-        1:[const IconData(0xf05b1, fontFamily: 'MaterialIcons'),10],
-        2:[Icons.search,11],
-        3:[Icons.abc_sharp,12],
-        4:[Icons.ac_unit_rounded,13],
-        5:[Icons.mobile_screen_share_rounded,14],
-        6:[Icons.account_balance_wallet_sharp,15],
-        7:[Icons.account_balance_wallet_outlined,16],
-        8:[Icons.zoom_out_map_outlined,17],
-        9:[Icons.youtube_searched_for_sharp,18],
-        10:[Icons.face,19],
-        11:[Icons.dangerous,20],
-        12:[Icons.e_mobiledata,21],
-        13:[Icons.e_mobiledata,21],
-        14:[Icons.woo_commerce_rounded,21],
-        };
+    print(Preferences.fechaSeleccionada);
             final egresoIngresoService = Provider.of<EgresoIngresoService>(context);
             final categoriaService = Provider.of<CategoriaService>(context);
             final loginService = Provider.of<LoginService>(context);            
             final List<CategoriaModal> categoriasLista = categoriaService.listaCategoria;
-            if (egresoIngresoService.isLoading || categoriaService.isLoading) const Loading();
-            print("${categoriasLista.length} hola")            ;
+            if (egresoIngresoService.isLoading || categoriaService.isLoading) const Loading();   
 
     return Scaffold(
       backgroundColor: colorPrimary,
@@ -107,14 +89,11 @@ class HomePage extends StatelessWidget {
               heightFactor: 0.7,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children:  const [
-                   CardDrawerWidget(titulo: "Día", color: colorSecundary,),
-                   CardDrawerWidget(titulo: "Semana",color: colorSecundary),
-                   CardDrawerWidget(titulo: "Mes",color: colorSecundary),
-                   CardDrawerWidget(titulo: "Año",color: colorSecundary),
-                   CardDrawerWidget(titulo: "Todo",color: colorSecundary),
-                   CardDrawerWidget(titulo: "Intervalo",color: colorSecundary),
-                   CardDrawerWidget(titulo: "Elegir fecha",color: colorSecundary),
+                children:  [
+                   CardDrawerWidget(titulo: "Día", color: colorSecundary, fechaSeleccionada: fecha("dia")),
+                   CardDrawerWidget(titulo: "Mes",color: colorSecundary, fechaSeleccionada: fecha("mes")),
+                   CardDrawerWidget(titulo: "Año",color: colorSecundary, fechaSeleccionada: fecha("año")),
+                   CardDrawerWidget(titulo: "Todo",color: colorSecundary, fechaSeleccionada: '',),
                 ],
               ),
             ),
@@ -151,11 +130,11 @@ class HomePage extends StatelessWidget {
                    IngresosEgresosWidget(
                   ingreso: "CLP ${egresoIngresoService.totalIngreso.toString()}", 
                   egreso: "CLP ${egresoIngresoService.totalGasto.toString()}"),
-                CategoriasPersonalizadasWidget(
-                  ancho: (MediaQuery.of(context).size.height <800) ? MediaQuery.of(context).size.height*0.5/100: MediaQuery.of(context).size.height*2/100,
-                  datos: data2,
-                  ),
-                 GraficoDonuts(data: egresoIngresoService.listaCategoriaModificada,),
+                // CategoriasPersonalizadasWidget(
+                //   ancho: (MediaQuery.of(context).size.height <800) ? MediaQuery.of(context).size.height*0.5/100: MediaQuery.of(context).size.height*2/100,
+                //   datos: data2,
+                //   ),
+                 GraficoDonutsNuevo(data: egresoIngresoService.listaCategoriaModificada,),
                  BottonModal(
                   saldo: ((egresoIngresoService.totalIngreso)-(egresoIngresoService.totalGasto)).toString(),
                   datos: egresoIngresoService.listaCategoriaModificada, 
@@ -233,7 +212,30 @@ class HomePage extends StatelessWidget {
                 )
     );
   }
+
+//TODO: Mejorar la utilización de la fecha para seleccionar fechas
+  fecha(String diaMesYear){
+        final dayMonthYearSeleccionado = Preferences.fechaSeleccionada.split("-");
+      switch (diaMesYear) {
+        case "dia":
+          dayMonthYearSeleccionado;
+          break;
+        case "mes":
+          dayMonthYearSeleccionado.removeLast();
+          dayMonthYearSeleccionado;
+          break;
+        case "año":
+        dayMonthYearSeleccionado.removeLast();
+        dayMonthYearSeleccionado.removeLast();
+           dayMonthYearSeleccionado;
+          break;
+        
+      }
+
+        return dayMonthYearSeleccionado.join('-');
+  }
 }
+
 
 // TODO: 
 //  1. Crear lista de categorias predeterminadas

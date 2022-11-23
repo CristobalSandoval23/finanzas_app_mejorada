@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utilidades/fecha.dart';
+
 class Preferences {
   static late SharedPreferences _prefs;
 
@@ -7,6 +9,7 @@ class Preferences {
   static String _valorNuevo = "" ;
   static String _token = "" ;
   static bool _bloquear = false ;
+  static String _fechaSeleccionada = formatoFechaModificado(DateTime.now().toString()) ;
 
   static Future init() async{
     _prefs = await SharedPreferences.getInstance();
@@ -43,6 +46,14 @@ class Preferences {
   static set bloquear(bool bloquear) {
     _bloquear = bloquear;
     _prefs.setBool("bloquear", bloquear);
+  }
+  static String get fechaSeleccionada {
+    return _prefs.getString("fechaSeleccionada") ?? _fechaSeleccionada;
+  }
+
+  static set fechaSeleccionada(String fechaSeleccionada) {
+    _fechaSeleccionada = fechaSeleccionada;
+    _prefs.setString("fechaSeleccionada", fechaSeleccionada);
   }
 
 }

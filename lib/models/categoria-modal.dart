@@ -4,15 +4,15 @@ class CategoriaModal {
     CategoriaModal({
        required this.id,
        required this.nombre,
-        this.color,
-        this.icon,
+       required this.color,
+       required this.icon,
         // this.ingresoEgreso,
     });
 
     String id;
     String nombre;
-    int? color;
-    int? icon;
+    int color;
+    int icon;
 
     factory CategoriaModal.fromJson(String str) => CategoriaModal.fromMap(json.decode(str));
 
